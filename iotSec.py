@@ -45,7 +45,7 @@ class Encryptor:
         encrypted_text = cipher.encrypt(message)
         return encrypted_text
 
-    def encrypt_file(self, file_name):
+    def encrypt_file(self, file_name, print_data=False):
         '''
             This function encrypts the file.
             Steps:
@@ -58,8 +58,10 @@ class Encryptor:
         '''
         with open(file_name, 'r') as f:
             file_content = f.read()
+            if print_data:
+                print(file_content)
         encrypted_file_data = self.encrypt(file_content, self.key)
-        with open(file_name + '.enc', 'w') as f:
+        with open(file_name + '.enc', 'wb') as f:
             f.write(encrypted_file_data)
 
     def decrypt(self, cipherText, key):
@@ -78,7 +80,7 @@ class Encryptor:
         plaintext = cipher.decrypt(cipherText).decode('utf-8')
         return self._unpading(plaintext)
 
-    def decrypt_file(self, file_name):
+    def decrypt_file(self, file_name, print_data=False):
         '''
             This function decrypts the file
             Steps:
@@ -89,11 +91,13 @@ class Encryptor:
             Returns:
                 None
         '''
-        with open(file_name, 'r') as f:
+        with open(file_name, 'rb') as f:
             cipherText = f.read()
         dcrypt = self.decrypt(cipherText, self.key)
-        with open(file_name[:4], 'w') as f:
-            f.write(dcrypt)
+        if print_data:
+            print(dcrypt)
+        #with open(file_name, 'w') as f:
+        #    f.write(dcrypt)
 
 
 enc = Encryptor(key)
@@ -102,3 +106,5 @@ print(msg)
 enc_msg = enc.encrypt(msg, key)
 print(enc_msg)
 print(enc.decrypt(enc_msg, key))
+enc.encrypt_file('passwords.txt', print_data=True)
+enc.decrypt_file('passwords.txt.enc', print_data=True)
