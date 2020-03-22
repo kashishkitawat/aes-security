@@ -1,4 +1,6 @@
 from Crypto.Cipher import AES
+from getpass import getpass
+from pathlib import Path
 
 key = '1234567890qwerty'  #size = 16
 
@@ -6,6 +8,7 @@ key = '1234567890qwerty'  #size = 16
 class Encryptor:
     def __init__(self, key):
         self.key = key
+        self.passFile = 'passwords.txt'
 
     def _pading(self, message):
         '''
@@ -45,7 +48,7 @@ class Encryptor:
         encrypted_text = cipher.encrypt(message)
         return encrypted_text
 
-    def encrypt_file(self, file_name, print_data=False):
+    def _encrypt_file(self, file_name, print_data=False):
         '''
             This function encrypts the file.
             Steps:
@@ -80,7 +83,7 @@ class Encryptor:
         plaintext = cipher.decrypt(cipherText).decode('utf-8')
         return self._unpading(plaintext)
 
-    def decrypt_file(self, file_name, print_data=False):
+    def _decrypt_file(self, file_name, rtn_data=False, print_data=False):
         '''
             This function decrypts the file
             Steps:
@@ -91,20 +94,43 @@ class Encryptor:
             Returns:
                 None
         '''
-        with open(file_name, 'rb') as f:
+        with open(file_name + '.enc', 'rb') as f:
             cipherText = f.read()
         dcrypt = self.decrypt(cipherText, self.key)
         if print_data:
             print(dcrypt)
-        #with open(file_name, 'w') as f:
+        if rtn_data:
+        	return dcrypt
+        # with open(file_name, 'w') as f:
         #    f.write(dcrypt)
 
+    def check_usr(self, usr, paswrd):
+    	data = self._decrypt_file(self.passFile, rtn_data=True)
+    	
+    	for line in data.split('\n'):
+    		# print(line)
+    		# print(line.split(' '))
+    		username, password = line.split(' ')
+    		if usr == username and paswrd == password:
+    			return True
+    		else:
+    			return False
 
-enc = Encryptor(key)
-msg = 'Hello World!'
-print(msg)
-enc_msg = enc.encrypt(msg, key)
-print(enc_msg)
-print(enc.decrypt(enc_msg, key))
-enc.encrypt_file('passwords.txt', print_data=True)
-enc.decrypt_file('passwords.txt.enc', print_data=True)
+
+
+if __name__ == '__main__':
+	enc = Encryptor(key)
+	# msg = 'Hello World!'
+	# print(msg)
+	# enc_msg = enc.encrypt(msg, key)
+	# print(enc_msg)
+	# print(enc.decrypt(enc_msg, key))
+	# enc._encrypt_file('passwords.txt', print_data=True)
+	# enc.decrypt_file('passwords.txt.enc', print_data=True)
+	'''
+		Need to add more input parts
+	'''
+	usr = input('Enter Username: ')
+	paswd = getpass()
+	isValid = enc.check_usr(usr, paswd)
+	print(isValid)
