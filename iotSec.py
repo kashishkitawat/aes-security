@@ -185,6 +185,10 @@ if __name__ == '__main__':
             with open('roles.txt', 'w+') as f:
                 f.write('admin = ' + admin_roles)
             enc._encrypt_file('roles.txt')
+        if not Path('data.csv').is_file():
+            print('Please save your data.csv file in here')
+        else:
+            enc._encrypt_file('data.csv')
     else:
         usr = input('Enter Username: ')
         paswd = getpass()
@@ -199,17 +203,20 @@ if __name__ == '__main__':
                 print('2. Modify username/password')
                 usr_choice = input('Enter Choice: ')  # Add error check here
                 if usr_choice is '1':
-                    add_data = input('Enter new entry in the form of: username \
-                                        password designated_group')
+                    add_data = input('Enter new entry in the form of:\n\
+                        username password designated_group: ')
                 elif usr_choice is '2':
-                    add_data = input('Enter existing entry in the form of: \
-                                       username password designated_group')
+                    add_data = input('Enter existing entry in the form of: \n\
+                        username password designated_group: ')
+                else:
+                    print('Wrong option')
+                    exit()
                 data = enc._decrypt_file('passwords.txt', rtn_data=True)
                 data = data.split('\n')
                 modified = False
                 for i in range(len(data)):
                     if add_data.split()[0] in data[i]:
-                        data[i] = add_data  # replace that line with new data
+                        data[i] = add_data
                         modified = True
                 if not modified:
                     data.append(add_data)
@@ -217,17 +224,19 @@ if __name__ == '__main__':
                 with open('passwords.txt', 'w') as f:
                     f.write(data)
                 enc._encrypt_file('passwords.txt')
-                enc._decrypt_file('passwords.txt', print_data=True)
             elif choice is '2':
                 print('1. Add roles')
                 print('2. Modify roles')
                 usr_choice = input('Enter Choice: ')  # Add error check here
                 if usr_choice is '1':
-                    add_data = input('Enter new role in the form of: \
-                                        group_name = column1, column2,..')
+                    add_data = input('Enter new role in the form of: \n\
+                        group_name = column1, column2,..: ')
                 elif usr_choice is '2':
-                    add_data = input('Enter existing entry in the form of: \
-                                       group_name = column1, column2,..')
+                    add_data = input('Enter existing entry in the form of: \n\
+                        group_name = column1, column2,..: ')
+                else:
+                    print('Wrong option')
+                    exit()
                 data = enc._decrypt_file('roles.txt', rtn_data=True)
                 data = data.split('\n')
                 modified = False
@@ -241,10 +250,16 @@ if __name__ == '__main__':
                 with open('roles.txt', 'w') as f:
                     f.write(data)
                 enc._encrypt_file('roles.txt')
-                enc._decrypt_file('roles.txt', print_data=True)
             elif choice is '3':
+                if not Path('data.csv.enc').is_file():
+                    print('Cannot process the request because \n\
+                        the file does not exist')
+                    exit()
                 can_be_accessed = enc.get_roles(group)
                 enc.get_data(can_be_accessed)
+            else:
+                print('Wrong option')
+                exit()
         else:
             if group != 0:
                 # print(group)
