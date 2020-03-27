@@ -1,4 +1,0 @@
-admin = room1, room2, room3
-ug2 = room1
-ug3 = room2
-ug4 = room1, room2
