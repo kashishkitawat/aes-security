@@ -221,7 +221,7 @@ if __name__ == '__main__':
                 regex_match_2 = re.compile('.*=.*,.*')
                 match_1 = regex_match_1.match(add_data)
                 match_2 = regex_match_2.match(add_data)
-                if (match_1 and match_2) is None:
+                if (match_1 is None and match_2 is None):
                     print('ERROR: Details not added properly. Try Again!')
                     exit()
                 for i in range(len(data)):
