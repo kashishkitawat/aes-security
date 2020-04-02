@@ -15,9 +15,9 @@ class Encryptor:
     def __init__(self, key):
         """Encryptor init."""
         self.key = key
-        self.passFile = 'passwords.txt'
-        self.roleFile = 'roles.txt'
-        self.dataFile = 'data.csv'
+        self.passFile = '../bin/passwords.txt'
+        self.roleFile = '../bin/roles.txt'
+        self.dataFile = '../data/data.csv'
 
     def _pading(self, message):
         """
@@ -143,25 +143,25 @@ class Encryptor:
 
 if __name__ == '__main__':
     enc = Encryptor(key)
-    if not Path('passwords.txt.enc').is_file():
+    if not Path('../bin/passwords.txt.enc').is_file():
         username = input('Enter Admin Username: ')
         password = getpass('Enter Admin Password: ')
-        with open('passwords.txt', 'w+') as f:
+        with open('../bin/passwords.txt', 'w+') as f:
             f.write(username + ' ' + password + ' admin')
-        enc.encrypt_file('passwords.txt')
-        Path('passwords.txt').unlink()
-        if not Path('roles.txt.enc').is_file():
+        enc.encrypt_file('../bin/passwords.txt')
+        Path('../bin/passwords.txt').unlink()
+        if not Path('../bin/roles.txt.enc').is_file():
             print('Enter admin roles in the form of')
             print('column1, column2, column3')
             admin_roles = input('Enter roles: ')
-            with open('roles.txt', 'w+') as f:
+            with open('../bin/roles.txt', 'w+') as f:
                 f.write('admin = ' + admin_roles)
-            enc.encrypt_file('roles.txt')
-            Path('roles.txt').unlink()
-        if not Path('data.csv').is_file():
+            enc.encrypt_file('../bin/roles.txt')
+            Path('../bin/roles.txt').unlink()
+        if not Path('../data/data.csv').is_file():
             print('!!!Please save your data.csv file in here!!!')
         else:
-            enc.encrypt_file('data.csv')
+            enc.encrypt_file('../data/data.csv')
     else:
         usr = input('Enter Username: ')
         paswd = getpass()
@@ -176,15 +176,26 @@ if __name__ == '__main__':
                 print('2. Modify username/password')
                 usr_choice = input('Enter Choice: ')  # Add error check here
                 if usr_choice is '1':
-                    add_data = input('Enter new entry in the form of:\n\
-                        username password designated_group: ')
+                    print('Enter new entry in the form of: ')
+                    add_data = input('username password designated_group: ')
+                    print('Enter new role in the form of: ')
+                    add_role = input('column1, column2,..: ')
+                    group = add_data.strip().split()[-1]
+                    role_data = enc.decrypt_file('../bin/roles.txt', rtn_data=True)
+                    role_data = role_data.split('\n')
+                    role_data.append(group + " = " + add_role)
+                    data = '\n'.join(role_data)
+                    with open('../bin/roles.txt', 'w+') as f:
+                        f.write(data)
+                    enc.encrypt_file('../bin/roles.txt')
+                    Path('../bin/roles.txt').unlink()
                 elif usr_choice is '2':
-                    add_data = input('Enter existing entry in the form of: \n\
-                        username password designated_group: ')
+                    print('Enter existing entry in the form of: ')
+                    add_data = input('username password designated_group: ')
                 else:
                     print('Wrong option')
                     exit()
-                data = enc.decrypt_file('passwords.txt', rtn_data=True)
+                data = enc.decrypt_file('../bin/passwords.txt', rtn_data=True)
                 data = data.split('\n')
                 modified = False
                 if len(add_data.split()) != 3:
@@ -197,24 +208,24 @@ if __name__ == '__main__':
                 if not modified:
                     data.append(add_data)
                 data = '\n'.join(data)
-                with open('passwords.txt', 'w+') as f:
+                with open('../bin/passwords.txt', 'w+') as f:
                     f.write(data)
-                enc.encrypt_file('passwords.txt')
-                Path('passwords.txt').unlink()
+                enc.encrypt_file('../bin/passwords.txt')
+                Path('../bin/passwords.txt').unlink()
             elif choice is '2':
                 print('1. Add roles')
                 print('2. Modify roles')
                 usr_choice = input('Enter Choice: ')  # Add error check here
                 if usr_choice is '1':
-                    add_data = input('Enter new role in the form of: \n\
-                        group_name = column1, column2,..: ')
+                    print('Enter new role in the form of: ')
+                    add_data = input('group_name = column1, column2,..: ')
                 elif usr_choice is '2':
-                    add_data = input('Enter existing entry in the form of: \n\
-                        group_name = column1, column2,..: ')
+                    print('Enter existing entry in the form of: ')
+                    add_data = input('group_name = column1, column2,..: ')
                 else:
                     print('Wrong option')
                     exit()
-                data = enc.decrypt_file('roles.txt', rtn_data=True)
+                data = enc.decrypt_file('../bin/roles.txt', rtn_data=True)
                 data = data.split('\n')
                 modified = False
                 regex_match_1 = re.compile('.*=.*')
@@ -231,14 +242,13 @@ if __name__ == '__main__':
                 if not modified:
                     data.append(add_data)
                 data = '\n'.join(data)
-                with open('roles.txt', 'w+') as f:
+                with open('../bin/roles.txt', 'w+') as f:
                     f.write(data)
-                enc.encrypt_file('roles.txt')
-                Path('roles.txt').unlink()
+                enc.encrypt_file('../bin/roles.txt')
+                Path('../bin/roles.txt').unlink()
             elif choice is '3':
-                if not Path('data.csv.enc').is_file():
-                    print('Cannot process the request because \n\
-                        the file does not exist')
+                if not Path('../data/data.csv.enc').is_file():
+                    print('File does not exist')
                     exit()
                 can_be_accessed = enc.get_roles(group)
                 enc.get_data(can_be_accessed)
