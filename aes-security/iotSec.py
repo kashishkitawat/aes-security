@@ -143,7 +143,8 @@ class Encryptor:
 
 if __name__ == '__main__':
     enc = Encryptor(key)
-    if not Path('../bin/passwords.txt.enc').is_file():
+    if not Path('../bin').is_dir():
+        Path('../bin').mkdir()
         username = input('Enter Admin Username: ')
         password = getpass('Enter Admin Password: ')
         with open('../bin/passwords.txt', 'w+') as f:
@@ -181,8 +182,8 @@ if __name__ == '__main__':
                     print('Enter new role in the form of: ')
                     add_role = input('column1, column2,..: ')
                     group = add_data.strip().split()[-1]
-                    role_data = enc.decrypt_file('../bin/roles.txt', rtn_data=True)
-                    role_data = role_data.split('\n')
+                    rdata = enc.decrypt_file('../bin/roles.txt', rtn_data=True)
+                    role_data = rdata.split('\n')
                     role_data.append(group + " = " + add_role)
                     data = '\n'.join(role_data)
                     with open('../bin/roles.txt', 'w+') as f:
